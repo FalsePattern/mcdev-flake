@@ -1,8 +1,9 @@
+# Where the magic happens.
 { pkgs, lib ? pkgs.lib, version }:
 let
   importPkg = path: pkgs.callPackage (import path) { inherit pkgs; };
 
-  openal64 = importPkg ./openal64.nix;
+  openal64 = importPkg ./packages/openal64.nix;
 
   x11Deps = with pkgs.xorg; [
     libX11
@@ -38,6 +39,7 @@ in
 pkgs.mkShell rec {
   name = "mcdev_${version.mc}-java${version.java}";
   buildInputs = runtimeLibs ++ runtimePrograms;
+  # opengl-driver is usually just mesa
   shellHook = ''
     export LD_LIBRARY_PATH=/run/opengl-driver/lib:${lib.makeLibraryPath runtimeLibs}:$LD_LIBRARY_PATH
     export PATH=$PATH:${lib.makeBinPath runtimePrograms}

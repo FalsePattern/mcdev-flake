@@ -1,3 +1,5 @@
+# LWJGL 2 searches in the order of libopenal64.so -> libopenal.so, so this is needed if we want to use openal-soft
+# instead of the openal library that ships with the game.
 { pkgs, ... }:
 let
   stdenv = pkgs.stdenv;

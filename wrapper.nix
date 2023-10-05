@@ -1,3 +1,4 @@
+# QoL wrapper script to make entering the dev shell trivial from anywhere
 { pkgs, devShell, name, ... }:
 let
   stdenv = pkgs.stdenv;
