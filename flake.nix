@@ -9,18 +9,32 @@
   outputs = { self, nixpkgs, flake-utils }:
     with builtins;
     let
-      genPairs = mcVersions: javaVersions: concatLists (map (mc: map (java: { inherit mc java; }) javaVersions) mcVersions);
-      knownVersions = genPairs [ "1.7.10" ] [ "8" ];
+      knownVersions = [
+        {
+          mc = "1.7.10";
+          java = "8";
+        }
+      ];
       toJavaPkg = version: "temurin-bin-${version}";
-      getSupportedVersions = pkgs: map (version: version // { java_pkg = pkgs.${toJavaPkg version.java}; }) (filter (version: pkgs ? ${toJavaPkg version.java}) knownVersions);
+      getSupportedVersions = system: pkgs: map
+        (version: version // { java_pkg = pkgs.${toJavaPkg version.java}; })
+        (filter (version:
+           let
+             pkgName = toJavaPkg version.java;
+             hasPackage = pkgs ? ${pkgName};
+             result = if hasPackage then
+                        true
+                      else
+                        trace "Could not find package ${pkgName} on system ${system}!" false;
+           in result) knownVersions);
       versionString = version: "${version.mc}-java${version.java}";
 
-      isLinux = system: builtins.match ".*linux.*" system != null;
-      linuxSystems = builtins.filter isLinux flake-utils.lib.defaultSystems;
+      isLinux = system: match ".*linux.*" system != null;
+      linuxSystems = filter isLinux flake-utils.lib.defaultSystems;
       output = flake-utils.lib.eachSystem linuxSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
-          supportedVersions = getSupportedVersions pkgs;
+          supportedVersions = getSupportedVersions system pkgs;
           mapVersions = nameCreator: valueCreator:
             listToAttrs (
               map
