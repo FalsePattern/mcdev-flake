@@ -14,8 +14,12 @@
           mc = "1.7.10";
           java = "8";
         }
+        {
+          mc = "rdn";
+          java = "21";
+        }
       ];
-      toJavaPkg = version: "temurin-bin-${version}";
+      toJavaPkg = version: "jdk${version}";
       getSupportedVersions = system: pkgs: map
         (version: version // { java_pkg = pkgs.${toJavaPkg version.java}; })
         (filter (version:
