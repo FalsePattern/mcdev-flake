@@ -8,7 +8,7 @@
   additionalPrograms ? [ ]
 }:
 let
-  importPkg = path: pkgs.callPackage (import path) { inherit pkgs; };
+  importPkg = path: pkgs.callPackage path { inherit pkgs; };
 
   openal64 = importPkg ./packages/openal64.nix;
 

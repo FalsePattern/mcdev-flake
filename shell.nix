@@ -1,4 +1,3 @@
-# Where the magic happens.
 {
   pkgs,
   version,

@@ -53,7 +53,7 @@
           devShellEntry = version: import ./shell.nix {
             inherit pkgs version;
           };
-          packageEntry = version: import ./wrapper.nix {
+          packageEntry = version: pkgs.callPackage ./wrapper.nix {
             inherit pkgs version;
             name = "mcdev_${versionString version}";
           };
