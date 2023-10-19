@@ -50,10 +50,11 @@
                 supportedVersions
             );
 
-          devShellEntry = version: import ./shell.nix { inherit pkgs version; };
+          devShellEntry = version: import ./shell.nix {
+            inherit pkgs version;
+          };
           packageEntry = version: import ./wrapper.nix {
-            inherit pkgs;
-            devShell = versionString version;
+            inherit pkgs version;
             name = "mcdev_${versionString version}";
           };
         in

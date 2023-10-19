@@ -1,49 +1,20 @@
 # Where the magic happens.
-{ pkgs, lib ? pkgs.lib, version }:
+{
+  pkgs,
+  version,
+  additionalLibs ? [ ],
+  additionalPrograms ? [ ]
+}:
 let
-  importPkg = path: pkgs.callPackage (import path) { inherit pkgs; };
-
-  openal64 = importPkg ./packages/openal64.nix;
-
-  x11Deps = with pkgs.xorg; [
-    libX11
-    libXext
-    libXcursor
-    libXrandr
-    libXxf86vm
-    libXrender
-    libXi
-    libXtst
-  ];
-
-  lwjglDeps = with pkgs; [
-    # lwjgl
-    libpulseaudio
-    libGL
-    openal
-    openal64
-    glfw
-    stdenv.cc.cc.lib
-  ];
-
-  oshiDeps = with pkgs; [
-    udev
-  ];
-
-  runtimeLibs = x11Deps ++ lwjglDeps ++ oshiDeps ++ [ version.java_pkg ];
-  runtimePrograms = with pkgs; [
-    xorg.xrandr
-    mesa-demos # need glxinfo
-  ];
+  deps = import ./deps.nix { inherit pkgs version additionalLibs additionalPrograms; };
 in
 pkgs.mkShell rec {
   name = "mcdev_${version.mc}-java${version.java}";
-  buildInputs = runtimeLibs ++ runtimePrograms;
-  # opengl-driver is usually just mesa
+  buildInputs = deps.inputs;
   shellHook = ''
-    export LD_LIBRARY_PATH=/run/opengl-driver/lib:${lib.makeLibraryPath runtimeLibs}:$LD_LIBRARY_PATH
-    export PATH=$PATH:${lib.makeBinPath runtimePrograms}
+    export LD_LIBRARY_PATH=${deps.LD_LIBRARY_PATH}:$LD_LIBRARY_PATH
+    export PATH=$PATH:${deps.PATH};
   '';
-  XDG_DATA_DIRS = builtins.getEnv "XDG_DATA_DIRS";
-  XDG_RUNTIME_DIR = builtins.getEnv "XDG_RUNTIME_DIR";
+  XDG_DATA_DIRS = deps.XDG_DATA_DIRS;
+  XDG_RUNTIME_DIR = deps.XDG_RUNTIME_DIR;
 }
