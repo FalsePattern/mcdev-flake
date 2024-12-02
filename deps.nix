@@ -3,7 +3,7 @@
   pkgs,
   lib ? pkgs.lib,
   version,
-  addOpenGLRunpath ? pkgs.addOpenGLRunpath,
+  addDriverRunpath ? pkgs.addDriverRunpath,
   additionalLibs ? [ ],
   additionalPrograms ? [ ]
 }:
@@ -45,7 +45,7 @@ let
 in
 {
   inputs = runtimeLibs ++ runtimePrograms;
-  LD_LIBRARY_PATH = "${addOpenGLRunpath.driverLink}/lib:${lib.makeLibraryPath runtimeLibs}";
+  LD_LIBRARY_PATH = "${addDriverRunpath.driverLink}/lib:${lib.makeLibraryPath runtimeLibs}";
   PATH = lib.makeBinPath runtimePrograms;
   XDG_DATA_DIRS = builtins.getEnv "XDG_DATA_DIRS";
   XDG_RUNTIME_DIR = builtins.getEnv "XDG_RUNTIME_DIR";
