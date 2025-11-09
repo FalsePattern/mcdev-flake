@@ -2,8 +2,8 @@
   description = "Minecraft Development flake";
 
   inputs = {
-    nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
-    flake-utils.url = github:numtide/flake-utils;
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
   outputs = { self, nixpkgs, flake-utils }:
@@ -66,7 +66,7 @@
     in
     output // {
       overlays.default = final: prev: {
-        mcdev = output.packages.${prev.system};
+        mcdev = output.packages.${prev.stdenv.hostPlatform.system};
       };
     };
 }
